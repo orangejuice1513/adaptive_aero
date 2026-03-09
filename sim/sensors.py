@@ -159,8 +159,8 @@ class ImuConfig:
 @dataclass(slots=True)
 class VioConfig:
     rate_hz: float = 20.0
-    pos_noise_std_m: float = 0.1
-    latency_s: float = 0.05
+    pos_noise_std_m: float = 0.07
+    latency_s: float = 0.04
 
     def __post_init__(self) -> None:
         if self.rate_hz <= 0.0:
