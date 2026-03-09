@@ -92,29 +92,28 @@ class ControllerConfig:
     """
     Position + geometric-attitude controller gains and limits.
 
-    Defaults are conservative and meant to get the vehicle flying in this
-    project sim, not to squeeze every last millisecond out of a race line.
+    More aggressive defaults for high-dynamic trajectory tracking.
     """
 
-    kp_pos: Array3 = field(default_factory=lambda: np.array([3.0, 3.0, 6.0], dtype=float))
-    kd_vel: Array3 = field(default_factory=lambda: np.array([2.4, 2.4, 4.0], dtype=float))
-    ki_pos: Array3 = field(default_factory=lambda: np.array([0.0, 0.0, 0.5], dtype=float))
+    kp_pos: Array3 = field(default_factory=lambda: np.array([16.0, 16.0, 21.0], dtype=float))
+    kd_vel: Array3 = field(default_factory=lambda: np.array([10, 12, 13], dtype=float))
+    ki_pos: Array3 = field(default_factory=lambda: np.array([0.0, 0.0, 0.8], dtype=float))
 
-    kp_att: Array3 = field(default_factory=lambda: np.array([0.20, 0.20, 0.10], dtype=float))
-    kd_rate: Array3 = field(default_factory=lambda: np.array([0.025, 0.025, 0.020], dtype=float))
+    kp_att: Array3 = field(default_factory=lambda: np.array([4, 4, 1.5], dtype=float))
+    kd_rate: Array3 = field(default_factory=lambda: np.array([0.3, 0.3, 0.15], dtype=float))
 
-    max_acc_xy: float = 8.0
-    max_acc_up: float = 8.0
-    max_acc_down: float = 6.0
-    max_tilt_rad: float = math.radians(45.0)
-    max_yaw_rate: float = math.radians(180.0)
+    max_acc_xy: float = 40.0
+    max_acc_up: float = 22.0
+    max_acc_down: float = 18.0
+    max_tilt_rad: float = math.radians(75.0)
+    max_yaw_rate: float = math.radians(360.0)
 
-    max_torque_nm: Array3 = field(default_factory=lambda: np.array([0.40, 0.40, 0.18], dtype=float))
+    max_torque_nm: Array3 = field(default_factory=lambda: np.array([2, 2, 0.8], dtype=float))
     min_total_thrust_n: float = 0.0
     hover_thrust_bias_n: float = 0.0
 
     pos_integrator_limit: Array3 = field(
-        default_factory=lambda: np.array([1.0, 1.0, 1.5], dtype=float)
+        default_factory=lambda: np.array([1.5, 1.5, 2.0], dtype=float)
     )
     use_coriolis_comp: bool = True
 

@@ -82,7 +82,7 @@ class MotorConfig:
     - spin_dirs should be +1 / -1 for rotor reaction torque sign.
     """
 
-    thrust_coeff_n_per_rpm2: float = 1.80e-7
+    thrust_coeff_n_per_rpm2: float = 2.50e-7
     yaw_moment_coeff_nm_per_rpm2: float = 2.50e-9
     motor_time_constant_s: float = 0.03
     min_rpm: float = 0.0
