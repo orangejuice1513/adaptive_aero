@@ -1,0 +1,18 @@
+{
+  "flight": "flight-01a-ellipse",
+  "n_steps": 5404,
+  "imu_samples": 5404,
+  "vio_samples": 450,
+  "adaptive_config": {
+    "beta_pos_var": 1.0000000000000002e-06,
+    "beta_vel_var": 0.0002,
+    "beta_att_var": 1.0000000000000002e-06,
+    "subtract_gravity": true
+  },
+  "hover_rmse": 0.2069917886215293,
+  "race_rmse": 0.21041383806949004,
+  "adaptive_rmse": 0.2371333507623902,
+  "hover_nees": 23.050304827709596,
+  "race_nees": 4.856235702495196,
+  "adaptive_nees": 3.395797826102867
+}

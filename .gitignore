@@ -5,3 +5,11 @@
 *.yaml
 *sync.csv
 *.txt
+
+*.save
+.claude/
+*.npz
+
+*_zipchunk*
+data/
+*.pyc

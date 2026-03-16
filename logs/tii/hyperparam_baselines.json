@@ -1,0 +1,32 @@
+{
+  "flight-11a-lemniscate": {
+    "hover": {
+      "rmse": 0.0628,
+      "nees": 2.32
+    },
+    "race": {
+      "rmse": 0.0629,
+      "nees": 0.48
+    }
+  },
+  "flight-01a-ellipse": {
+    "hover": {
+      "rmse": 0.1648,
+      "nees": 16.34
+    },
+    "race": {
+      "rmse": 0.1649,
+      "nees": 3.34
+    }
+  },
+  "flight-05a-ellipse": {
+    "hover": {
+      "rmse": 0.0086,
+      "nees": 0.04
+    },
+    "race": {
+      "rmse": 0.0087,
+      "nees": 0.01
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "flight_name": "flight-01a-ellipse",
+  "n_steps": 11258,
+  "duration_s": 22.514647999999998,
+  "vio_updates": 688,
+  "hover_rmse_m": 0.16482616674227274,
+  "race_rmse_m": 0.16485262280191498,
+  "adaptive_rmse_m": 0.1679848073958873,
+  "hover_mean_nees": 16.337714068588646,
+  "race_mean_nees": 3.3381273866713883,
+  "adaptive_mean_nees": 2.2905120922825577
+}

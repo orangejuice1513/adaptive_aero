@@ -610,6 +610,110 @@ class RacingTrackTrajectory:
         return self._traj.sample(t)
 
 
+@dataclass(slots=True)
+class TIIReplayTrajectory:
+    """
+    Replays a real TII drone flight as a reference trajectory.
+
+    Loads mocap ground-truth positions from a pre-parsed .npz file,
+    smooths with a moving-average, and computes velocity/acceleration
+    via central finite differences.  The trajectory loops at the end.
+
+    Parameters
+    ----------
+    npz_path : str | Path
+        Path to a TII .npz file (from parse_data.py).
+    smooth_window : int
+        Half-width of the moving-average window in samples (default 5 → 11-sample window).
+    """
+
+    npz_path: str
+    smooth_window: int = 5
+
+    # Computed in __post_init__
+    _t: np.ndarray = field(init=False, repr=False)
+    _pos: np.ndarray = field(init=False, repr=False)
+    _vel: np.ndarray = field(init=False, repr=False)
+    _acc: np.ndarray = field(init=False, repr=False)
+    _duration: float = field(init=False, repr=False)
+
+    def __post_init__(self) -> None:
+        raw = np.load(self.npz_path, allow_pickle=False)
+        t_raw: np.ndarray = raw["t"].astype(float)
+        pos_raw: np.ndarray = raw["truth_pos"].astype(float)
+
+        # Remove NaN rows
+        valid = np.all(np.isfinite(pos_raw), axis=1)
+        t_raw = t_raw[valid]
+        pos_raw = pos_raw[valid]
+
+        # Moving-average smoothing per axis
+        w = max(1, int(self.smooth_window))
+        kernel = np.ones(2 * w + 1, dtype=float) / (2 * w + 1)
+        pos_smooth = np.stack(
+            [np.convolve(pos_raw[:, i], kernel, mode="same") for i in range(3)],
+            axis=1,
+        )
+
+        # Central finite differences for velocity and acceleration
+        dt_arr = np.diff(t_raw)
+        dt_arr = np.where(dt_arr > 0, dt_arr, 1e-4)
+
+        # velocity: central diff (forward/backward at edges)
+        vel = np.zeros_like(pos_smooth)
+        vel[1:-1] = (pos_smooth[2:] - pos_smooth[:-2]) / (
+            (t_raw[2:] - t_raw[:-2])[:, None]
+        )
+        vel[0] = (pos_smooth[1] - pos_smooth[0]) / dt_arr[0]
+        vel[-1] = (pos_smooth[-1] - pos_smooth[-2]) / dt_arr[-1]
+
+        # acceleration: central diff of velocity
+        acc = np.zeros_like(vel)
+        acc[1:-1] = (vel[2:] - vel[:-2]) / (
+            (t_raw[2:] - t_raw[:-2])[:, None]
+        )
+        acc[0] = (vel[1] - vel[0]) / dt_arr[0]
+        acc[-1] = (vel[-1] - vel[-2]) / dt_arr[-1]
+
+        # Clip extreme accelerations (mocap outliers)
+        acc = np.clip(acc, -50.0, 50.0)
+
+        self._t = t_raw
+        self._pos = pos_smooth
+        self._vel = vel
+        self._acc = acc
+        self._duration = float(t_raw[-1] - t_raw[0])
+
+    def sample(self, t: float) -> ReferenceState:
+        # Loop trajectory
+        t_loop = float(t % self._duration) + self._t[0]
+        idx = int(np.searchsorted(self._t, t_loop, side="right")) - 1
+        idx = int(np.clip(idx, 0, len(self._t) - 1))
+
+        pos = self._pos[idx]
+        vel = self._vel[idx]
+        acc = self._acc[idx]
+
+        if _norm(vel[:2]) > 1e-9:
+            yaw = math.atan2(float(vel[1]), float(vel[0]))
+            yaw_rate = _estimate_yaw_rate_from_vel_acc(vel, acc)
+        else:
+            yaw = 0.0
+            yaw_rate = 0.0
+
+        return ReferenceState(
+            pos_w=pos.copy(),
+            vel_w=vel.copy(),
+            acc_w=acc.copy(),
+            yaw=yaw,
+            yaw_rate=yaw_rate,
+        )
+
+    @property
+    def duration(self) -> float:
+        return self._duration
+
+
 def _estimate_yaw_rate_from_vel_acc(vel_w: np.ndarray, acc_w: np.ndarray, eps: float = 1e-9) -> float:
     vx, vy = float(vel_w[0]), float(vel_w[1])
     ax, ay = float(acc_w[0]), float(acc_w[1])
@@ -633,5 +737,6 @@ __all__ = [
     "MinimumJerkSegment",
     "PiecewiseTrajectory",
     "RacingTrackTrajectory",
+    "TIIReplayTrajectory",
     "make_default_race_traj",
 ]

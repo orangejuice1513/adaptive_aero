@@ -1,0 +1,12 @@
+{
+  "flight_name": "flight-04a-ellipse",
+  "n_steps": 14573,
+  "duration_s": 29.144733,
+  "vio_updates": 891,
+  "hover_rmse_m": 0.036527228713318524,
+  "race_rmse_m": 0.03704123848614016,
+  "adaptive_rmse_m": 0.047338647627230876,
+  "hover_mean_nees": 0.8011176908478365,
+  "race_mean_nees": 0.1681239132170841,
+  "adaptive_mean_nees": 0.1378178759496048
+}

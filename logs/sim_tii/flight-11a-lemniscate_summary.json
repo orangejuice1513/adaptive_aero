@@ -1,0 +1,18 @@
+{
+  "flight": "flight-11a-lemniscate",
+  "n_steps": 5384,
+  "imu_samples": 5384,
+  "vio_samples": 448,
+  "adaptive_config": {
+    "beta_pos_var": 1.0000000000000002e-06,
+    "beta_vel_var": 0.0002,
+    "beta_att_var": 1.0000000000000002e-06,
+    "subtract_gravity": true
+  },
+  "hover_rmse": 0.19187903879212984,
+  "race_rmse": 0.195594530230414,
+  "adaptive_rmse": 0.2238705649407999,
+  "hover_nees": 19.57883836957415,
+  "race_nees": 4.166884903670823,
+  "adaptive_nees": 2.9710683937576836
+}

@@ -38,8 +38,17 @@ class AdaptiveUKFConfig:
     max_vel_var: float = 5e-1
     max_att_var: float = 5e-3
 
+    # If True, subtract 9.81 m/s² from specific force before applying beta,
+    # so Q only grows for G-load *above* hover (excess Gs from manoeuvres).
+    subtract_gravity: bool = False
+
     def rpm_sq_norm(self, rpm_sq_sum: float) -> float:
         return float(rpm_sq_sum / (4.0 * self.motor_max_rpm ** 2))
+
+    def effective_sf(self, specific_force_mag_mps2: float) -> float:
+        if self.subtract_gravity:
+            return max(0.0, specific_force_mag_mps2 - 9.81)
+        return float(specific_force_mag_mps2)
 
 
 class AdaptiveUKF:
@@ -65,7 +74,7 @@ class AdaptiveUKF:
         specific_force_mag_mps2: float,
     ) -> np.ndarray:
         rpm_term = self.cfg.rpm_sq_norm(rpm_sq_sum)
-        g_term = float(specific_force_mag_mps2)
+        g_term = self.cfg.effective_sf(specific_force_mag_mps2)
 
         pos_var = (
             self.cfg.pos_process_var
